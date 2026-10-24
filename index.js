@@ -347,4 +347,4 @@ app.get('/', async (req, res) => {
         <div>
             <h4>Connect</h4>
             <p>${settings.phonePrimary || '+977-9800000000'}</p>
-            <p>${settings.email || 'info@scho
+            <p>${settings.email || 'info@school.example'}</p>

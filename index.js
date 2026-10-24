@@ -349,3 +349,114 @@ app.get('/', async (req, res) => {
             <p>${settings.phonePrimary || '+977-9800000000'}</p>
             <p>${settings.email || 'info@school.example'}</p>
             
+        </div>
+    </div>
+</footer>
+
+<script>
+async function loadPublicData() {
+    try {
+        const response = await fetch('/api/public-data');
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const container = document.getElementById('dynamic-content');
+        let html = '';
+
+        if (data.notices && data.notices.length) {
+            html += '<section><h2 class="section-title">Latest Notices</h2><div class="grid-3">';
+            data.notices.forEach(n => {
+                html += `<div class="clay card"><h3>${n.title || 'Notice'}</h3><p>${n.description || ''}</p></div>`;
+            });
+            html += '</div></section>';
+        }
+
+        if (data.events && data.events.length) {
+            html += '<section><h2 class="section-title">Upcoming Events</h2><div class="grid-3">';
+            data.events.forEach(e => {
+                html += `<div class="clay card"><h3>${e.title || 'School Event'}</h3><p>${e.description || ''}</p></div>`;
+            });
+            html += '</div></section>';
+        }
+
+        if (data.programs && data.programs.length) {
+            html += '<section id="academics"><h2 class="section-title">Our Academic Programs</h2><div class="grid-3">';
+            data.programs.forEach(p => {
+                html += `<div class="clay card"><h3>${p.title || 'Program'}</h3><p>${p.gradeRange || ''}</p><p>${p.description || ''}</p></div>`;
+            });
+            html += '</div></section>';
+        }
+
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Failed to load public data:', error);
+    }
+}
+
+document.getElementById('admission-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const payload = {
+        studentName: document.getElementById('studentName').value,
+        requestedGrade: document.getElementById('requestedGrade').value,
+        parentName: document.getElementById('parentName').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value
+    };
+
+    try {
+        const response = await fetch('/api/admissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.error || 'Submission failed');
+
+        const success = document.getElementById('admission-success');
+        success.style.display = 'block';
+        success.textContent = 'Application submitted! Reference number: ' + result.refNo;
+        this.reset();
+    } catch (error) {
+        alert('Application failed. Please try again.');
+        console.error(error);
+    }
+});
+
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const payload = {
+        name: document.getElementById('c_name').value,
+        email: document.getElementById('c_email').value,
+        body: document.getElementById('c_body').value
+    };
+
+    try {
+        const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error('Message submission failed');
+
+        alert('Message sent successfully!');
+        this.reset();
+    } catch (error) {
+        alert('Could not send message. Please try again.');
+        console.error(error);
+    }
+});
+
+loadPublicData();
+</script>
+</body>
+</html>`;
+
+    res.send(html);
+});
+
+module.exports = app;
+        

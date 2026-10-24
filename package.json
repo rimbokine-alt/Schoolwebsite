@@ -4,7 +4,7 @@
   "description": "Dynamic Full-Stack School Website & Management System",
   "main": "index.js",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "start": "node index.js"
